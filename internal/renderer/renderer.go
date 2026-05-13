@@ -23,14 +23,15 @@ type CellData struct {
 	Fasting      bool
 	IsEkadasi    bool
 	Icons        []string
-	FootnoteRefs []int
+	HasFootnotes bool
 	HasSankranti bool
 }
 
 type Footnote struct {
-	Number int
-	Text   string
-	Icon   string
+	DayNum     int
+	ShowDayNum bool
+	Text       string
+	Icon       string
 }
 
 type MonthGrid struct {
@@ -96,8 +97,6 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 		GregorianMonths: gregorianMonthRange(month.Days),
 	}
 
-	footnoteNum := 1
-
 	if len(month.Days) == 0 {
 		return grid
 	}
@@ -140,16 +139,24 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 			cell.Icons = append(cell.Icons, IconEkadasi)
 		}
 
+		dayNum := day.Date.Day()
+		firstFn := true
+
+		addFootnote := func(text, icon string) {
+			grid.Footnotes = append(grid.Footnotes, Footnote{
+				DayNum:     dayNum,
+				ShowDayNum: firstFn,
+				Text:       text,
+				Icon:       icon,
+			})
+			cell.HasFootnotes = true
+			firstFn = false
+		}
+
 		if day.Sankranti != nil {
 			cell.HasSankranti = true
 			cell.Icons = append(cell.Icons, IconSankranti)
-			grid.Footnotes = append(grid.Footnotes, Footnote{
-				Number: footnoteNum,
-				Text:   fmt.Sprintf("%s --- %s", day.Sankranti.Name, day.Sankranti.Notes),
-				Icon:   IconSankranti,
-			})
-			cell.FootnoteRefs = append(cell.FootnoteRefs, footnoteNum)
-			footnoteNum++
+			addFootnote(fmt.Sprintf("%s --- %s", day.Sankranti.Name, day.Sankranti.Notes), IconSankranti)
 		}
 
 		for _, evt := range day.Events {
@@ -166,24 +173,11 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 					cell.Icons = append(cell.Icons, icon)
 				}
 			}
-
-			grid.Footnotes = append(grid.Footnotes, Footnote{
-				Number: footnoteNum,
-				Text:   evt.Description,
-				Icon:   icon,
-			})
-			cell.FootnoteRefs = append(cell.FootnoteRefs, footnoteNum)
-			footnoteNum++
+			addFootnote(evt.Description, icon)
 		}
 
 		if day.BreakFast != nil {
-			text := fmt.Sprintf("Break fast %s -- %s (%s)", day.BreakFast.Start, day.BreakFast.End, day.BreakFast.Notes)
-			grid.Footnotes = append(grid.Footnotes, Footnote{
-				Number: footnoteNum,
-				Text:   text,
-			})
-			cell.FootnoteRefs = append(cell.FootnoteRefs, footnoteNum)
-			footnoteNum++
+			addFootnote(fmt.Sprintf("Break fast %s -- %s (%s)", day.BreakFast.Start, day.BreakFast.End, day.BreakFast.Notes), "")
 		}
 
 		grid.Weeks[currentWeek][col] = cell

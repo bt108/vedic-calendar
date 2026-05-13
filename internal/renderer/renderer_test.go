@@ -61,17 +61,23 @@ func TestFootnoteNumbering(t *testing.T) {
 	if len(grid.Footnotes) != 2 {
 		t.Fatalf("footnotes = %d, want 2", len(grid.Footnotes))
 	}
-	if grid.Footnotes[0].Number != 1 {
-		t.Errorf("fn 0 number = %d", grid.Footnotes[0].Number)
+	if grid.Footnotes[0].DayNum != 7 {
+		t.Errorf("fn 0 DayNum = %d, want 7", grid.Footnotes[0].DayNum)
+	}
+	if !grid.Footnotes[0].ShowDayNum {
+		t.Error("fn 0 ShowDayNum should be true")
+	}
+	if grid.Footnotes[1].DayNum != 7 {
+		t.Errorf("fn 1 DayNum = %d, want 7", grid.Footnotes[1].DayNum)
+	}
+	if grid.Footnotes[1].ShowDayNum {
+		t.Error("fn 1 ShowDayNum should be false")
 	}
 	if grid.Weeks[0][3] == nil {
 		t.Fatal("Wednesday cell should not be nil")
 	}
-	if len(grid.Weeks[0][3].FootnoteRefs) != 2 {
-		t.Fatalf("cell fn refs = %d, want 2", len(grid.Weeks[0][3].FootnoteRefs))
-	}
-	if grid.Weeks[0][3].FootnoteRefs[0] != 1 {
-		t.Errorf("cell fn ref 0 = %d", grid.Weeks[0][3].FootnoteRefs[0])
+	if !grid.Weeks[0][3].HasFootnotes {
+		t.Error("Wednesday cell should have HasFootnotes=true")
 	}
 }
 

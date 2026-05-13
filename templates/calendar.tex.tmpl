@@ -64,8 +64,8 @@
 \node[anchor=west,font=\scriptsize,text=gray,inner sep=2pt] at (\xpos+0.08,\ypos-1.50) { {{$cell.Naksatra}}};{{else}}\node[anchor=west,font=\footnotesize,inner sep=2pt] at (\xpos+0.08,\ypos-0.75) { {{$cell.PaksaLabel}}\,\textperiodcentered\,{{$cell.Tithi}}};
 % Naksatra
 \node[anchor=west,font=\scriptsize,text=gray,inner sep=2pt] at (\xpos+0.08,\ypos-1.20) { {{$cell.Naksatra}}};{{end}}
-% Footnote refs
-{{if $cell.FootnoteRefs}}\node[anchor=south west,font=\scriptsize,inner sep=2pt] at (\xpos+0.08,\ypos-\rowh+0.05) {\textsuperscript{ {{range $cell.FootnoteRefs}}{{.}} {{end}}}};
+% Footnote marker
+{{if $cell.HasFootnotes}}\node[anchor=south west,font=\scriptsize,inner sep=2pt] at (\xpos+0.08,\ypos-\rowh+0.05) {*};
 {{end}}{{else}}%
 % Empty cell row={{$wi}} col={{$ci}}
 \pgfmathsetmacro{\xpos}{ {{$ci}}*\cellw}
@@ -80,7 +80,7 @@
 \noindent\rule{\textwidth}{0.4pt}
 \begin{multicols}{3}
 \scriptsize\raggedright
-{{range $grid.Footnotes}}\textsuperscript{ {{.Number}}} {{if .Icon}}{{.Icon}}\hspace{0.5em}{{end}}{{.Text}}\par
+{{range $grid.Footnotes}}\noindent\makebox[1.5em][r]{ {{- if .ShowDayNum}}{{.DayNum}}{{end -}} }\enspace {{if .Icon}}{{.Icon}}\hspace{0.5em}{{end}}{{.Text}}\par
 {{end}}
 \end{multicols}
 \vspace{1mm}
