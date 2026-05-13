@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/taraka/vedic-calendar/internal/models"
 )
@@ -33,12 +34,13 @@ type Footnote struct {
 }
 
 type MonthGrid struct {
-	MasaName     string
-	MasaAltName  string
-	GaurabdaYear int
-	Location     string
-	Weeks        [][7]*CellData
-	Footnotes    []Footnote
+	MasaName        string
+	MasaAltName     string
+	GaurabdaYear    int
+	Location        string
+	GregorianMonths string
+	Weeks           [][7]*CellData
+	Footnotes       []Footnote
 }
 
 const (
@@ -69,11 +71,29 @@ func iconForEventType(t models.EventType) string {
 	}
 }
 
+func gregorianMonthRange(days []models.Day) string {
+	seen := make(map[time.Month]bool)
+	var ordered []time.Month
+	for _, d := range days {
+		m := d.Date.Month()
+		if !seen[m] {
+			seen[m] = true
+			ordered = append(ordered, m)
+		}
+	}
+	parts := make([]string, len(ordered))
+	for i, m := range ordered {
+		parts[i] = m.String()[:3]
+	}
+	return strings.Join(parts, "/")
+}
+
 func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 	grid := MonthGrid{
-		MasaName:     month.MasaName,
-		MasaAltName:  month.MasaAltName,
-		GaurabdaYear: month.GaurabdaYear,
+		MasaName:        month.MasaName,
+		MasaAltName:     month.MasaAltName,
+		GaurabdaYear:    month.GaurabdaYear,
+		GregorianMonths: gregorianMonthRange(month.Days),
 	}
 
 	footnoteNum := 1

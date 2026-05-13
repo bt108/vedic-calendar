@@ -25,7 +25,7 @@
 \begin{tikzpicture}
 \pgfmathsetmacro{\fullw}{\textwidth/1cm}
 \fill[headerbg] (0,0) rectangle (\fullw,1.2);
-\node[anchor=west,white,font=\Large\bfseries] at (0.3,0.6) { {{$grid.MasaName}}{{if $grid.MasaAltName}} ({{$grid.MasaAltName}}){{end}} };
+\node[anchor=west,white,font=\Large\bfseries] at (0.3,0.6) { {{$grid.MasaName}}{{if $grid.MasaAltName}} ({{$grid.MasaAltName}}){{end}}{{if $grid.GregorianMonths}} --- {{$grid.GregorianMonths}}{{end}} };
 \node[anchor=east,white,font=\normalsize] at (\fullw-0.3,0.6) {Gaurabda {{$grid.GaurabdaYear}} --- {{$grid.Location}}};
 \end{tikzpicture}
 
