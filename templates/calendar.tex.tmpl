@@ -79,6 +79,7 @@
 \vfill
 \noindent\rule{\textwidth}{0.4pt}
 \begin{multicols}{3}
+\raggedcolumns
 \scriptsize\raggedright
 {{range $grid.Footnotes}}\noindent\makebox[1.5em][r]{ {{- if .ShowDayNum}}{{.DayNum}}{{end -}} }\enspace\makebox[1.4em][c]{ {{- if .Icon}}{{.Icon}}{{end -}} }~{{.Text}}\par
 {{end}}
