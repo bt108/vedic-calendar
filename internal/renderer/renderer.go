@@ -32,6 +32,7 @@ type Footnote struct {
 	ShowDayNum bool
 	Text       string
 	Icon       string
+	Highlight  bool
 }
 
 type MonthGrid struct {
@@ -142,12 +143,13 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 		dayNum := day.Date.Day()
 		firstFn := true
 
-		addFootnote := func(text, icon string) {
+		addFootnote := func(text, icon string, highlight bool) {
 			grid.Footnotes = append(grid.Footnotes, Footnote{
 				DayNum:     dayNum,
 				ShowDayNum: firstFn,
 				Text:       text,
 				Icon:       icon,
+				Highlight:  highlight,
 			})
 			cell.HasFootnotes = true
 			firstFn = false
@@ -156,7 +158,7 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 		if day.Sankranti != nil {
 			cell.HasSankranti = true
 			cell.Icons = append(cell.Icons, IconSankranti)
-			addFootnote(fmt.Sprintf("%s --- %s", day.Sankranti.Name, day.Sankranti.Notes), IconSankranti)
+			addFootnote(fmt.Sprintf("%s --- %s", day.Sankranti.Name, day.Sankranti.Notes), IconSankranti, false)
 		}
 
 		for _, evt := range day.Events {
@@ -173,11 +175,11 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 					cell.Icons = append(cell.Icons, icon)
 				}
 			}
-			addFootnote(evt.Description, icon)
+			addFootnote(evt.Description, icon, evt.Highlight)
 		}
 
 		if day.BreakFast != nil {
-			addFootnote(fmt.Sprintf("Break fast %s -- %s (%s)", day.BreakFast.Start, day.BreakFast.End, day.BreakFast.Notes), "")
+			addFootnote(fmt.Sprintf("Break fast %s -- %s (%s)", day.BreakFast.Start, day.BreakFast.End, day.BreakFast.Notes), "", false)
 		}
 
 		grid.Weeks[currentWeek][col] = cell
