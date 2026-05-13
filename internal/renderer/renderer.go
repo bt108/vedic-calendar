@@ -193,7 +193,6 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 }
 
 type TemplateData struct {
-	Location models.Location
 	Grids    []MonthGrid
 }
 
@@ -210,9 +209,7 @@ func LoadCalendar(jsonPath string) (models.Calendar, error) {
 }
 
 func RenderTeX(cal models.Calendar, templateDir string, w io.Writer) error {
-	td := TemplateData{
-		Location: cal.Location,
-	}
+	td := TemplateData{}
 	for _, m := range cal.Months {
 		g := BuildMonthGrid(m)
 		g.Location = cal.Location.Name
@@ -226,19 +223,6 @@ func RenderTeX(cal models.Calendar, templateDir string, w io.Writer) error {
 
 	if err := calTmpl.Execute(w, td); err != nil {
 		return fmt.Errorf("execute calendar template: %w", err)
-	}
-
-	refContent, err := os.ReadFile(filepath.Join(templateDir, "reference.tex.tmpl"))
-	if err != nil {
-		return fmt.Errorf("read reference template: %w", err)
-	}
-
-	refTmpl, err := template.New("reference").Parse(string(refContent))
-	if err != nil {
-		return fmt.Errorf("parse reference template: %w", err)
-	}
-	if err := refTmpl.Execute(w, td); err != nil {
-		return fmt.Errorf("execute reference template: %w", err)
 	}
 
 	fmt.Fprintln(w, `\end{document}`)
