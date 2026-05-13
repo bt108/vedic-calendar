@@ -111,6 +111,9 @@ func TestMergeHighlightFalse(t *testing.T) {
 	}
 	var log bytes.Buffer
 	Merge(cal, extras, &log)
+	if len(cal.Months[0].Days[0].Events) == 0 {
+		t.Fatal("expected 1 event, got 0")
+	}
 	if cal.Months[0].Days[0].Events[0].Highlight {
 		t.Error("expected Highlight=false when not set in extra file")
 	}
