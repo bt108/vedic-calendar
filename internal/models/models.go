@@ -35,6 +35,7 @@ type Day struct {
 type Event struct {
 	Type        EventType `json:"type"`
 	Description string    `json:"description"`
+	Highlight   bool      `json:"highlight,omitempty"`
 }
 
 type EventType string
