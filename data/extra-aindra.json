@@ -1,0 +1,18 @@
+[
+  {
+    "masa": "Caitra",
+    "paksa": "krishna",
+    "tithi": "Dvadasi",
+    "type": "appearance",
+    "description": "Aindra Prabhu -- Appearance",
+    "highlight": true
+  },
+  {
+    "masa": "Asadha",
+    "paksa": "shukla",
+    "tithi": "Sasti",
+    "type": "disappearance",
+    "description": "Aindra Prabhu -- Disappearance",
+    "highlight": true
+  }
+]
