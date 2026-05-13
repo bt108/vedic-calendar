@@ -44,11 +44,11 @@ type MonthGrid struct {
 }
 
 const (
-	IconEkadasi       = `$\blacklozenge$`
-	IconAppearance    = `$\bigstar$`
-	IconDisappearance = `\dag`
-	IconFestival      = `$\odot$`
-	IconSankranti     = `$\blacktriangle$`
+	IconEkadasi       = `\faMoon`
+	IconAppearance    = `\faStar`
+	IconDisappearance = `\faFire`
+	IconFestival      = `\faDrum`
+	IconSankranti     = `\faSun`
 )
 
 func splitTithi(tithi string) (main, sub string) {

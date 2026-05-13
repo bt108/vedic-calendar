@@ -4,6 +4,7 @@
 \usepackage{tikz}
 \usepackage{xcolor}
 \usepackage{amssymb}
+\usepackage{fontawesome5}
 \usepackage{multicol}
 
 \setmainfont{Charis SIL}
@@ -58,7 +59,7 @@
 % Day number
 \node[anchor=north west,font=\large\bfseries,inner sep=2pt] at (\xpos+0.08,\ypos-0.05) { {{$cell.DayNum}}};
 % Icons
-{{if $cell.Icons}}\node[anchor=north east,font=\scriptsize,inner sep=2pt] at (\xpos+\cellw-0.08,\ypos-0.05) { {{range $cell.Icons}}{{.}} {{end}}};
+{{if $cell.Icons}}\node[anchor=north east,font=\scriptsize,inner sep=2pt] at (\xpos+\cellw-0.08,\ypos-0.05) { {{range $cell.Icons}}\hspace{2pt}{{.}}\hspace{2pt}{{end}}};
 {{end}}% Paksa-Tithi
 {{if $cell.TithiSub}}\node[anchor=west,font=\footnotesize,inner sep=2pt] at (\xpos+0.08,\ypos-0.75) { {{$cell.PaksaLabel}}\,\textperiodcentered\,{{$cell.Tithi}}};
 \node[anchor=west,font=\scriptsize,text=gray,inner sep=2pt] at (\xpos+0.08,\ypos-1.10) { {{$cell.TithiSub}}};
@@ -82,11 +83,11 @@
 \noindent\rule{\textwidth}{0.4pt}
 \begin{multicols}{3}
 \scriptsize\raggedright
-{{range $grid.Footnotes}}\textsuperscript{ {{.Number}}} {{.Icon}} {{.Text}}\par
+{{range $grid.Footnotes}}\textsuperscript{ {{.Number}}} {{if .Icon}}{{.Icon}}\hspace{0.5em}{{end}}{{.Text}}\par
 {{end}}
 \end{multicols}
 \vspace{1mm}
-{\scriptsize $\blacklozenge$\,Ekadasi \quad $\bigstar$\,Appearance \quad \dag\,Disappearance \quad $\odot$\,Festival \quad $\blacktriangle$\,Sankranti \quad \colorbox{fastingbg}{~~}\,Fasting day}
+{\scriptsize \faMoon\,Ekadasi \quad \faStar\,Appearance \quad \faFire\,Disappearance \quad \faDrum\,Festival \quad \faSun\,Sankranti \quad \colorbox{fastingbg}{~~}\,Fasting day}
 
 \newpage
 {{end}}
