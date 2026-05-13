@@ -13,16 +13,17 @@ import (
 )
 
 type CellData struct {
-	DayNum        int
-	Weekday       string
-	TithiShort    string
-	PaksaLabel    string
-	NaksatraShort string
-	Fasting       bool
-	IsEkadasi     bool
-	Icons         []string
-	FootnoteRefs  []int
-	HasSankranti  bool
+	DayNum       int
+	Weekday      string
+	Tithi        string
+	TithiSub     string // parenthetical qualifier, e.g. "(suitable for fasting)"
+	PaksaLabel   string
+	Naksatra     string
+	Fasting      bool
+	IsEkadasi    bool
+	Icons        []string
+	FootnoteRefs []int
+	HasSankranti bool
 }
 
 type Footnote struct {
@@ -47,6 +48,13 @@ const (
 	IconFestival      = `$\odot$`
 	IconSankranti     = `$\blacktriangle$`
 )
+
+func splitTithi(tithi string) (main, sub string) {
+	if idx := strings.Index(tithi, "("); idx >= 0 {
+		return strings.TrimSpace(tithi[:idx]), strings.TrimSpace(tithi[idx:])
+	}
+	return tithi, ""
+}
 
 func iconForEventType(t models.EventType) string {
 	switch t {
@@ -96,12 +104,14 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 		}
 		prevCol = col
 
+		tithiMain, tithiSub := splitTithi(day.Tithi)
 		cell := &CellData{
-			DayNum:        day.Date.Day(),
-			Weekday:       day.Weekday,
-			TithiShort:    ShortenTithi(day.Tithi),
-			PaksaLabel:    day.Paksa,
-			NaksatraShort: ShortenNaksatra(day.Naksatra),
+			DayNum:     day.Date.Day(),
+			Weekday:    day.Weekday,
+			Tithi:      tithiMain,
+			TithiSub:   tithiSub,
+			PaksaLabel: day.Paksa,
+			Naksatra:   day.Naksatra,
 			Fasting:       day.Fasting,
 			IsEkadasi:     strings.HasPrefix(day.Tithi, "Ekadasi"),
 		}

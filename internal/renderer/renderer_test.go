@@ -35,11 +35,11 @@ func TestBuildMonthGrid(t *testing.T) {
 	if grid.Weeks[0][0].DayNum != 4 {
 		t.Errorf("day num = %d, want 4", grid.Weeks[0][0].DayNum)
 	}
-	if grid.Weeks[0][0].TithiShort != "Pra" {
-		t.Errorf("tithi short = %q, want Pra", grid.Weeks[0][0].TithiShort)
+	if grid.Weeks[0][0].Tithi != "Pratipat" {
+		t.Errorf("tithi = %q, want Pratipat", grid.Weeks[0][0].Tithi)
 	}
-	if grid.Weeks[0][0].NaksatraShort != "Pun" {
-		t.Errorf("naksatra short = %q, want Pun", grid.Weeks[0][0].NaksatraShort)
+	if grid.Weeks[0][0].Naksatra != "Punarvasu" {
+		t.Errorf("naksatra = %q, want Punarvasu", grid.Weeks[0][0].Naksatra)
 	}
 }
 
@@ -75,31 +75,17 @@ func TestFootnoteNumbering(t *testing.T) {
 	}
 }
 
-func TestShortenTithi(t *testing.T) {
-	tests := []struct{ input, want string }{
-		{"Ekadasi", "Eka"},
-		{"Ekadasi (suitable for fasting)", "Eka"},
-		{"Purnima", "Pur"},
-		{"Amavasya", "Ama"},
+func TestSplitTithi(t *testing.T) {
+	tests := []struct{ input, wantMain, wantSub string }{
+		{"Ekadasi", "Ekadasi", ""},
+		{"Ekadasi (suitable for fasting)", "Ekadasi", "(suitable for fasting)"},
+		{"Dvadasi (suitable for fasting)", "Dvadasi", "(suitable for fasting)"},
+		{"Purnima", "Purnima", ""},
 	}
 	for _, tt := range tests {
-		got := ShortenTithi(tt.input)
-		if got != tt.want {
-			t.Errorf("ShortenTithi(%q) = %q, want %q", tt.input, got, tt.want)
-		}
-	}
-}
-
-func TestShortenNaksatra(t *testing.T) {
-	tests := []struct{ input, want string }{
-		{"Rohini", "Roh"},
-		{"Purva-phalguni", "PPh"},
-		{"Uttara-bhadra", "UBh"},
-	}
-	for _, tt := range tests {
-		got := ShortenNaksatra(tt.input)
-		if got != tt.want {
-			t.Errorf("ShortenNaksatra(%q) = %q, want %q", tt.input, got, tt.want)
+		gotMain, gotSub := splitTithi(tt.input)
+		if gotMain != tt.wantMain || gotSub != tt.wantSub {
+			t.Errorf("splitTithi(%q) = %q, %q; want %q, %q", tt.input, gotMain, gotSub, tt.wantMain, tt.wantSub)
 		}
 	}
 }
