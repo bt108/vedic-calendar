@@ -24,29 +24,26 @@
 % Header
 \noindent
 \begin{tikzpicture}
-\pgfmathsetmacro{\fullw}{\textwidth/1cm}
-\fill[headerbg] (0,0) rectangle (\fullw,1.2);
-\node[anchor=west,white,font=\Large\bfseries] at (0.3,0.6) { {{$grid.MasaName}}{{if $grid.MasaAltName}} ({{$grid.MasaAltName}}){{end}}{{if $grid.GregorianMonths}} --- {{$grid.GregorianMonths}}{{end}} };
-\node[anchor=east,white,font=\normalsize] at (\fullw-0.3,0.6) {Gaurabda {{$grid.GaurabdaYear}} --- {{$grid.Location}}};
+\fill[headerbg] (0,0) rectangle (\linewidth,1.2cm);
+\node[anchor=west,white,font=\Large\bfseries] at (0.3cm,0.6cm) { {{$grid.MasaName}}{{if $grid.MasaAltName}} ({{$grid.MasaAltName}}){{end}}{{if $grid.GregorianMonths}} --- {{$grid.GregorianMonths}}{{end}} };
+\node[anchor=east,white,font=\normalsize] at (\linewidth-0.3cm,0.6cm) {Gaurabda {{$grid.GaurabdaYear}} --- {{$grid.Location}}};
 \end{tikzpicture}
 
 \vspace{1pt}
 
 % Weekday bar
 \noindent
-\begin{tikzpicture}
-\pgfmathsetmacro{\cellw}{\textwidth/7/1cm}
+\begin{tikzpicture}[x={\textwidth/7},y=1cm]
 \foreach \dayname [count=\ci from 0] in {Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday} {
-  \pgfmathsetmacro{\xpos}{\ci*\cellw}
-  \fill[weekdaybg] (\xpos,0) rectangle (\xpos+\cellw,0.55);
-  \node[anchor=center,white,font=\small\bfseries] at (\xpos+\cellw/2,0.275) {\dayname};
+  \fill[weekdaybg] (\ci,0) rectangle (\ci+1,0.55);
+  \node[anchor=center,white,font=\small\bfseries] at (\ci+0.5,0.275) {\dayname};
 }
 \end{tikzpicture}
 
 \vspace{1pt}
 
 % Grid
-\noindent
+\noindent\makebox[\linewidth][l]{%
 \begin{tikzpicture}
 \pgfmathsetmacro{\cellw}{\textwidth/7/1cm}
 \def\rowh{2.4}
@@ -76,7 +73,7 @@
 \fill[emptycell] (\xpos,\ypos) rectangle (\xpos+\cellw,\ypos-\rowh);
 \draw[cellborder,dashed] (\xpos,\ypos) rectangle (\xpos+\cellw,\ypos-\rowh);
 {{end}}{{end}}{{end}}
-\end{tikzpicture}
+\end{tikzpicture}}% end \makebox
 
 % Footnotes
 \vfill
