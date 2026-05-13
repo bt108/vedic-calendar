@@ -133,3 +133,28 @@ func TestSplitTithi(t *testing.T) {
 		}
 	}
 }
+
+func TestFootnoteHighlight(t *testing.T) {
+	days := []models.Day{
+		{
+			Date: time.Date(2026, 1, 7, 0, 0, 0, 0, time.UTC), Weekday: "We",
+			Tithi: "Pancami", Paksa: "K", Naksatra: "Magha",
+			Events: []models.Event{
+				{Type: models.EventAppearance, Description: "Highlighted Saint", Highlight: true},
+				{Type: models.EventFestival, Description: "Regular Festival", Highlight: false},
+			},
+		},
+	}
+	month := models.VedicMonth{MasaName: "Magha", GaurabdaYear: 539, Days: days}
+	grid := BuildMonthGrid(month)
+
+	if len(grid.Footnotes) != 2 {
+		t.Fatalf("expected 2 footnotes, got %d", len(grid.Footnotes))
+	}
+	if !grid.Footnotes[0].Highlight {
+		t.Error("first footnote should have Highlight=true")
+	}
+	if grid.Footnotes[1].Highlight {
+		t.Error("second footnote should have Highlight=false")
+	}
+}
