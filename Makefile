@@ -42,6 +42,10 @@ TEX        := $(OUTPUT_DIR)/calendar-$(NAME).tex
 PDF        := $(OUTPUT_DIR)/calendar-$(NAME).pdf
 PARSER     := parser
 RENDERER   := renderer
+MERGER     := merger
+
+EXTRAS     := $(wildcard data/extra-*.json)
+MERGED     := $(OUTPUT_DIR)/merged.json
 
 .PHONY: all parse render pdf clean check
 
@@ -58,6 +62,10 @@ $(PARSER): $(wildcard cmd/parser/*.go) $(wildcard internal/parser/*.go) $(wildca
 $(RENDERER): $(wildcard cmd/renderer/*.go) $(wildcard internal/renderer/*.go) $(wildcard internal/models/*.go)
 	go build -o $(RENDERER) ./cmd/renderer
 
+# Build the merger binary from source
+$(MERGER): $(wildcard cmd/merger/*.go) $(wildcard internal/merger/*.go) $(wildcard internal/models/*.go)
+	go build -o $(MERGER) ./cmd/merger
+
 $(OUTPUT_DIR):
 	mkdir -p $(OUTPUT_DIR)
 
@@ -67,9 +75,13 @@ $(JSON): $(PARSER) $(FESTIVALS) | $(OUTPUT_DIR)
 	@echo "Output: $(PDF)"
 	./$(PARSER) "$(FILE)" $(FESTIVALS) $(JSON)
 
-# Stage 2: render calendar.json → .tex (using templates/)
-$(TEX): $(RENDERER) $(JSON) $(wildcard $(TEMPLATES)/*.tex.tmpl)
-	./$(RENDERER) $(JSON) $(TEMPLATES) $(TEX)
+# Stage 1b: merge extra events into calendar.json → merged.json
+$(MERGED): $(MERGER) $(JSON) $(EXTRAS) | $(OUTPUT_DIR)
+	./$(MERGER) $(JSON) $(MERGED) $(EXTRAS)
+
+# Stage 2: render merged.json → .tex (using templates/)
+$(TEX): $(RENDERER) $(MERGED) $(wildcard $(TEMPLATES)/*.tex.tmpl)
+	./$(RENDERER) $(MERGED) $(TEMPLATES) $(TEX)
 
 # Stage 3: compile .tex → .pdf via lualatex
 # lualatex is run from within the output dir so auxiliary files (.aux, .log)
@@ -87,4 +99,4 @@ pdf: $(PDF)
 # Removes all generated output and compiled binaries.
 # Each input file gets its own output/ subdirectory, so this wipes them all.
 clean:
-	rm -rf output $(PARSER) $(RENDERER)
+	rm -rf output $(PARSER) $(RENDERER) $(MERGER)
