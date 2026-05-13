@@ -53,6 +53,8 @@
 \pgfmathsetmacro{\ypos}{-{{$wi}}*\rowh}
 {{if $cell.Fasting}}\fill[fastingbg] (\xpos,\ypos) rectangle (\xpos+\cellw,\ypos-\rowh);
 {{end}}\draw[cellborder] (\xpos,\ypos) rectangle (\xpos+\cellw,\ypos-\rowh);
+{{if $cell.HasHighlight}}\node[opacity=0.08,font=\fontsize{52}{52}\selectfont] at (\xpos+\cellw/2,\ypos-\rowh/2) {\faCrown};
+{{end}}
 % Day number
 \node[anchor=north west,font=\large\bfseries,inner sep=2pt] at (\xpos+0.08,\ypos-0.05) { {{$cell.DayNum}}};
 % Icons

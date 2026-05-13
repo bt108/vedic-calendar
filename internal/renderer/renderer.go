@@ -22,6 +22,7 @@ type CellData struct {
 	Naksatra     string
 	Fasting      bool
 	IsEkadasi    bool
+	HasHighlight bool
 	Icons        []string
 	HasFootnotes bool
 	HasSankranti bool
@@ -162,6 +163,9 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 		}
 
 		for _, evt := range day.Events {
+			if evt.Highlight {
+				cell.HasHighlight = true
+			}
 			icon := iconForEventType(evt.Type)
 			if icon != "" {
 				found := false
