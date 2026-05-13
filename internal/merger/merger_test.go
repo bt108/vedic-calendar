@@ -118,3 +118,22 @@ func TestMergeHighlightFalse(t *testing.T) {
 		t.Error("expected Highlight=false when not set in extra file")
 	}
 }
+
+func TestMergeNormalizePaksa(t *testing.T) {
+	// Calendar stores "G" (Gaura/Shukla); extra file uses natural-language "shukla"
+	cal := &models.Calendar{
+		Months: []models.VedicMonth{
+			{MasaName: "Kartika", Days: []models.Day{
+				{Date: time.Date(2026, 10, 2, 0, 0, 0, 0, time.UTC), Paksa: "G", Tithi: "Dvitiya"},
+			}},
+		},
+	}
+	extras := []ExtraEvent{
+		{Masa: "Kartika", Paksa: "shukla", Tithi: "Dvitiya", Type: models.EventAppearance, Description: "Saint Z", Highlight: true},
+	}
+	var log bytes.Buffer
+	Merge(cal, extras, &log)
+	if len(cal.Months[0].Days[0].Events) != 1 {
+		t.Fatalf("expected 1 event (shukla normalized to G), got %d", len(cal.Months[0].Days[0].Events))
+	}
+}
