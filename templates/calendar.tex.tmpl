@@ -1,4 +1,4 @@
-\documentclass[a4paper,landscape,10pt]{article}
+\documentclass[a4paper,landscape,12pt]{article}
 \usepackage[left=8mm,right=8mm,top=8mm,bottom=8mm]{geometry}
 \usepackage{fontspec}
 \usepackage{tikz}
@@ -6,7 +6,7 @@
 \usepackage{amssymb}
 \usepackage{multicol}
 
-\setmainfont{Latin Modern Roman}
+\setmainfont{Charis SIL}
 \definecolor{fastingbg}{gray}{0.90}
 \definecolor{cellborder}{gray}{0.5}
 \definecolor{headerbg}{gray}{0.15}
@@ -48,7 +48,7 @@
 \noindent
 \begin{tikzpicture}
 \pgfmathsetmacro{\cellw}{\textwidth/7/1cm}
-\def\rowh{1.8}
+\def\rowh{2.4}
 {{range $wi, $week := $grid.Weeks}}{{range $ci, $cell := $week}}{{if $cell}}%
 % Cell row={{$wi}} col={{$ci}}
 \pgfmathsetmacro{\xpos}{ {{$ci}}*\cellw}
@@ -58,16 +58,16 @@
 % Day number
 \node[anchor=north west,font=\large\bfseries,inner sep=2pt] at (\xpos+0.08,\ypos-0.05) { {{$cell.DayNum}}};
 % Icons
-{{if $cell.Icons}}\node[anchor=north east,font=\tiny,inner sep=2pt] at (\xpos+\cellw-0.08,\ypos-0.05) { {{range $cell.Icons}}{{.}} {{end}}};
+{{if $cell.Icons}}\node[anchor=north east,font=\scriptsize,inner sep=2pt] at (\xpos+\cellw-0.08,\ypos-0.05) { {{range $cell.Icons}}{{.}} {{end}}};
 {{end}}% Paksa-Tithi
-{{if $cell.TithiSub}}\node[anchor=west,font=\scriptsize,inner sep=2pt] at (\xpos+0.08,\ypos-0.65) { {{$cell.PaksaLabel}}\,\textperiodcentered\,{{$cell.Tithi}}};
-\node[anchor=west,font=\tiny,text=gray,inner sep=2pt] at (\xpos+0.08,\ypos-0.88) { {{$cell.TithiSub}}};
+{{if $cell.TithiSub}}\node[anchor=west,font=\footnotesize,inner sep=2pt] at (\xpos+0.08,\ypos-0.75) { {{$cell.PaksaLabel}}\,\textperiodcentered\,{{$cell.Tithi}}};
+\node[anchor=west,font=\scriptsize,text=gray,inner sep=2pt] at (\xpos+0.08,\ypos-1.10) { {{$cell.TithiSub}}};
 % Naksatra
-\node[anchor=west,font=\tiny,text=gray,inner sep=2pt] at (\xpos+0.08,\ypos-1.12) { {{$cell.Naksatra}}};{{else}}\node[anchor=west,font=\scriptsize,inner sep=2pt] at (\xpos+0.08,\ypos-0.65) { {{$cell.PaksaLabel}}\,\textperiodcentered\,{{$cell.Tithi}}};
+\node[anchor=west,font=\scriptsize,text=gray,inner sep=2pt] at (\xpos+0.08,\ypos-1.50) { {{$cell.Naksatra}}};{{else}}\node[anchor=west,font=\footnotesize,inner sep=2pt] at (\xpos+0.08,\ypos-0.75) { {{$cell.PaksaLabel}}\,\textperiodcentered\,{{$cell.Tithi}}};
 % Naksatra
-\node[anchor=west,font=\tiny,text=gray,inner sep=2pt] at (\xpos+0.08,\ypos-0.95) { {{$cell.Naksatra}}};{{end}}
+\node[anchor=west,font=\scriptsize,text=gray,inner sep=2pt] at (\xpos+0.08,\ypos-1.20) { {{$cell.Naksatra}}};{{end}}
 % Footnote refs
-{{if $cell.FootnoteRefs}}\node[anchor=south west,font=\tiny,inner sep=2pt] at (\xpos+0.08,\ypos-\rowh+0.05) {\textsuperscript{ {{range $cell.FootnoteRefs}}{{.}} {{end}}}};
+{{if $cell.FootnoteRefs}}\node[anchor=south west,font=\scriptsize,inner sep=2pt] at (\xpos+0.08,\ypos-\rowh+0.05) {\textsuperscript{ {{range $cell.FootnoteRefs}}{{.}} {{end}}}};
 {{end}}{{else}}%
 % Empty cell row={{$wi}} col={{$ci}}
 \pgfmathsetmacro{\xpos}{ {{$ci}}*\cellw}
