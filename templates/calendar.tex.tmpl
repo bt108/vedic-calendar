@@ -1,0 +1,89 @@
+\documentclass[a4paper,landscape,10pt]{article}
+\usepackage[left=8mm,right=8mm,top=8mm,bottom=8mm]{geometry}
+\usepackage{fontspec}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{multicol}
+
+\setmainfont{Latin Modern Roman}
+\definecolor{fastingbg}{gray}{0.90}
+\definecolor{cellborder}{gray}{0.5}
+\definecolor{headerbg}{gray}{0.15}
+\definecolor{weekdaybg}{gray}{0.30}
+\definecolor{emptycell}{gray}{0.97}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+{{range $gi, $grid := .Grids}}
+% ---- Masa: {{$grid.MasaName}} ----
+
+% Header
+\noindent
+\begin{tikzpicture}
+\pgfmathsetmacro{\fullw}{\textwidth/1cm}
+\fill[headerbg] (0,0) rectangle (\fullw,1.2);
+\node[anchor=west,white,font=\Large\bfseries] at (0.3,0.6) { {{$grid.MasaName}}{{if $grid.MasaAltName}} ({{$grid.MasaAltName}}){{end}} };
+\node[anchor=east,white,font=\normalsize] at (\fullw-0.3,0.6) {Gaurabda {{$grid.GaurabdaYear}} --- {{$grid.Location}}};
+\end{tikzpicture}
+
+\vspace{1pt}
+
+% Weekday bar
+\noindent
+\begin{tikzpicture}
+\pgfmathsetmacro{\cellw}{\textwidth/7/1cm}
+\foreach \dayname [count=\ci from 0] in {Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday} {
+  \pgfmathsetmacro{\xpos}{\ci*\cellw}
+  \fill[weekdaybg] (\xpos,0) rectangle (\xpos+\cellw,0.55);
+  \node[anchor=center,white,font=\small\bfseries] at (\xpos+\cellw/2,0.275) {\dayname};
+}
+\end{tikzpicture}
+
+\vspace{1pt}
+
+% Grid
+\noindent
+\begin{tikzpicture}
+\pgfmathsetmacro{\cellw}{\textwidth/7/1cm}
+\def\rowh{1.8}
+{{range $wi, $week := $grid.Weeks}}{{range $ci, $cell := $week}}{{if $cell}}%
+% Cell row={{$wi}} col={{$ci}}
+\pgfmathsetmacro{\xpos}{ {{$ci}}*\cellw}
+\pgfmathsetmacro{\ypos}{-{{$wi}}*\rowh}
+{{if $cell.Fasting}}\fill[fastingbg] (\xpos,\ypos) rectangle (\xpos+\cellw,\ypos-\rowh);
+{{end}}\draw[cellborder] (\xpos,\ypos) rectangle (\xpos+\cellw,\ypos-\rowh);
+% Day number
+\node[anchor=north west,font=\large\bfseries,inner sep=2pt] at (\xpos+0.08,\ypos-0.05) { {{$cell.DayNum}}};
+% Icons
+{{if $cell.Icons}}\node[anchor=north east,font=\tiny,inner sep=2pt] at (\xpos+\cellw-0.08,\ypos-0.05) { {{range $cell.Icons}}{{.}} {{end}}};
+{{end}}% Paksa-Tithi
+\node[anchor=west,font=\scriptsize,inner sep=2pt] at (\xpos+0.08,\ypos-0.65) { {{$cell.PaksaLabel}}\,\textperiodcentered\,{{$cell.TithiShort}}};
+% Naksatra
+\node[anchor=west,font=\tiny,text=gray,inner sep=2pt] at (\xpos+0.08,\ypos-0.95) { {{$cell.NaksatraShort}}};
+% Footnote refs
+{{if $cell.FootnoteRefs}}\node[anchor=south west,font=\tiny,inner sep=2pt] at (\xpos+0.08,\ypos-\rowh+0.05) {\textsuperscript{ {{range $cell.FootnoteRefs}}{{.}} {{end}}}};
+{{end}}{{else}}%
+% Empty cell row={{$wi}} col={{$ci}}
+\pgfmathsetmacro{\xpos}{ {{$ci}}*\cellw}
+\pgfmathsetmacro{\ypos}{-{{$wi}}*\rowh}
+\fill[emptycell] (\xpos,\ypos) rectangle (\xpos+\cellw,\ypos-\rowh);
+\draw[cellborder,dashed] (\xpos,\ypos) rectangle (\xpos+\cellw,\ypos-\rowh);
+{{end}}{{end}}{{end}}
+\end{tikzpicture}
+
+% Footnotes
+\vfill
+\noindent\rule{\textwidth}{0.4pt}
+\begin{multicols}{3}
+\scriptsize\raggedright
+{{range $grid.Footnotes}}\textsuperscript{ {{.Number}}} {{.Icon}} {{.Text}}\par
+{{end}}
+\end{multicols}
+\vspace{1mm}
+{\scriptsize $\blacklozenge$\,Ekadasi \quad $\bigstar$\,Appearance \quad \dag\,Disappearance \quad $\odot$\,Festival \quad $\blacktriangle$\,Sankranti \quad \colorbox{fastingbg}{~~}\,Fasting day}
+
+\newpage
+{{end}}
