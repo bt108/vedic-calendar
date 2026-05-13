@@ -81,6 +81,44 @@ func TestFootnoteNumbering(t *testing.T) {
 	}
 }
 
+func TestFootnoteDayNumResets(t *testing.T) {
+	days := []models.Day{
+		{
+			Date: time.Date(2026, 1, 7, 0, 0, 0, 0, time.UTC), Weekday: "We",
+			Tithi: "Pancami", Paksa: "K", Naksatra: "Magha",
+			Events: []models.Event{
+				{Type: models.EventAppearance, Description: "Event A"},
+				{Type: models.EventDisappearance, Description: "Event B"},
+			},
+		},
+		{
+			Date: time.Date(2026, 1, 8, 0, 0, 0, 0, time.UTC), Weekday: "Th",
+			Tithi: "Sasti", Paksa: "K", Naksatra: "Magha",
+			Events: []models.Event{
+				{Type: models.EventFestival, Description: "Event C"},
+			},
+		},
+	}
+
+	month := models.VedicMonth{MasaName: "Magha", Days: days}
+	grid := BuildMonthGrid(month)
+
+	if len(grid.Footnotes) != 3 {
+		t.Fatalf("footnotes = %d, want 3", len(grid.Footnotes))
+	}
+	// Day 7: first event shows day num, second does not
+	if !grid.Footnotes[0].ShowDayNum || grid.Footnotes[0].DayNum != 7 {
+		t.Errorf("fn 0: ShowDayNum=%v DayNum=%d, want true/7", grid.Footnotes[0].ShowDayNum, grid.Footnotes[0].DayNum)
+	}
+	if grid.Footnotes[1].ShowDayNum {
+		t.Error("fn 1 ShowDayNum should be false (second event of day 7)")
+	}
+	// Day 8: ShowDayNum resets to true
+	if !grid.Footnotes[2].ShowDayNum || grid.Footnotes[2].DayNum != 8 {
+		t.Errorf("fn 2: ShowDayNum=%v DayNum=%d, want true/8", grid.Footnotes[2].ShowDayNum, grid.Footnotes[2].DayNum)
+	}
+}
+
 func TestSplitTithi(t *testing.T) {
 	tests := []struct{ input, wantMain, wantSub string }{
 		{"Ekadasi", "Ekadasi", ""},
