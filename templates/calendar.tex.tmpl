@@ -43,7 +43,7 @@
 \vspace{1pt}
 
 % Grid
-\noindent\makebox[\linewidth][l]{%
+\noindent
 \begin{tikzpicture}
 \pgfmathsetmacro{\cellw}{\textwidth/7/1cm}
 \def\rowh{2.4}
@@ -73,7 +73,7 @@
 \fill[emptycell] (\xpos,\ypos) rectangle (\xpos+\cellw,\ypos-\rowh);
 \draw[cellborder,dashed] (\xpos,\ypos) rectangle (\xpos+\cellw,\ypos-\rowh);
 {{end}}{{end}}{{end}}
-\end{tikzpicture}}% end \makebox
+\end{tikzpicture}
 
 % Footnotes
 \vfill
