@@ -80,7 +80,8 @@ func TestParseLocation(t *testing.T) {
 }
 
 func TestClassifyEvent(t *testing.T) {
-	festivals := []string{"Sri Krsna Pusya Abhiseka", "Vasanta Pancami", "Ratha Yatra"}
+	major := []string{"Ratha Yatra"}
+	minor := []string{"Sri Krsna Pusya Abhiseka", "Vasanta Pancami"}
 
 	tests := []struct {
 		name    string
@@ -103,7 +104,7 @@ func TestClassifyEvent(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			evt, bf := classifyEvent(tt.text, festivals)
+			evt, bf := classifyEvent(tt.text, major, minor)
 			if tt.isBF {
 				if bf == nil {
 					t.Error("expected BreakFast, got nil")
@@ -192,8 +193,9 @@ func TestParseCalendar(t *testing.T) {
 16 Jan 2026 Fr   Trayodasi                         K Mula
 `
 
-	festivals := []string{"Sri Krsna Pusya Abhiseka", "Ganga Sagara Mela"}
-	cal, err := ParseCalendar(input, festivals)
+	major := []string{}
+	minor := []string{"Sri Krsna Pusya Abhiseka", "Ganga Sagara Mela"}
+	cal, err := ParseCalendar(input, major, minor)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

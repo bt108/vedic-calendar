@@ -96,7 +96,7 @@ func parseLocation(line string) (name, coords, tz string) {
 
 var reBreakFast = regexp.MustCompile(`^Break fast\s+(\d{2}:\d{2})\s+\([^)]+\)\s*-\s*(\d{2}:\d{2})\s+(.+)$`)
 
-func classifyEvent(text string, festivals []string) (models.Event, *models.BreakFast) {
+func classifyEvent(text string, major, minor []string) (models.Event, *models.BreakFast) {
 	trimmed := strings.TrimSpace(text)
 
 	// Break-fast info
@@ -126,8 +126,15 @@ func classifyEvent(text string, festivals []string) (models.Event, *models.Break
 		return models.Event{Type: models.EventFast, Description: trimmed}, nil
 	}
 
-	// Festival (check curated list)
-	for _, f := range festivals {
+	// Major festival
+	for _, f := range major {
+		if strings.Contains(trimmed, f) {
+			return models.Event{Type: models.EventFestival, Description: trimmed, Highlight: true}, nil
+		}
+	}
+
+	// Minor festival
+	for _, f := range minor {
 		if strings.Contains(trimmed, f) {
 			return models.Event{Type: models.EventFestival, Description: trimmed}, nil
 		}
@@ -168,19 +175,20 @@ func parseSankranti(line string) (models.Sankranti, int, time.Month) {
 }
 
 type FestivalList struct {
-	Festivals []string `json:"festivals"`
+	Major []string `json:"major"`
+	Minor []string `json:"minor"`
 }
 
-func LoadFestivals(path string) ([]string, error) {
+func LoadFestivals(path string) (major, minor []string, err error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("read festivals: %w", err)
+		return nil, nil, fmt.Errorf("read festivals: %w", err)
 	}
 	var fl FestivalList
 	if err := json.Unmarshal(data, &fl); err != nil {
-		return nil, fmt.Errorf("parse festivals: %w", err)
+		return nil, nil, fmt.Errorf("parse festivals: %w", err)
 	}
-	return fl.Festivals, nil
+	return fl.Major, fl.Minor, nil
 }
 
 func ParseCalendarFile(inputPath, festivalsPath string) (models.Calendar, error) {
@@ -188,14 +196,14 @@ func ParseCalendarFile(inputPath, festivalsPath string) (models.Calendar, error)
 	if err != nil {
 		return models.Calendar{}, fmt.Errorf("read input: %w", err)
 	}
-	festivals, err := LoadFestivals(festivalsPath)
+	major, minor, err := LoadFestivals(festivalsPath)
 	if err != nil {
 		return models.Calendar{}, err
 	}
-	return ParseCalendar(string(data), festivals)
+	return ParseCalendar(string(data), major, minor)
 }
 
-func ParseCalendar(input string, festivals []string) (models.Calendar, error) {
+func ParseCalendar(input string, major, minor []string) (models.Calendar, error) {
 	lines := strings.Split(input, "\n")
 	cal := models.Calendar{}
 	var currentMonth *models.VedicMonth
@@ -246,7 +254,7 @@ func ParseCalendar(input string, festivals []string) (models.Calendar, error) {
 				continue
 			}
 			text := strings.TrimSpace(line)
-			evt, bf := classifyEvent(text, festivals)
+			evt, bf := classifyEvent(text, major, minor)
 			if bf != nil {
 				currentDay.BreakFast = bf
 			} else {
