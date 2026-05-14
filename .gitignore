@@ -1,3 +1,5 @@
 output/
+docs/
 /parser
 /renderer
+/merger
