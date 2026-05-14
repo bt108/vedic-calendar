@@ -128,14 +128,14 @@ func classifyEvent(text string, major, minor []string) (models.Event, *models.Br
 
 	// Major festival
 	for _, f := range major {
-		if strings.Contains(trimmed, f) {
+		if strings.HasPrefix(trimmed, f) {
 			return models.Event{Type: models.EventFestival, Description: trimmed, Highlight: true}, nil
 		}
 	}
 
 	// Minor festival
 	for _, f := range minor {
-		if strings.Contains(trimmed, f) {
+		if strings.HasPrefix(trimmed, f) {
 			return models.Event{Type: models.EventFestival, Description: trimmed}, nil
 		}
 	}
