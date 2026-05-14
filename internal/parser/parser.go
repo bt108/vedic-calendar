@@ -99,7 +99,7 @@ var reBreakFast = regexp.MustCompile(`^Break fast\s+(\d{2}:\d{2})\s+\([^)]+\)\s*
 func classifyEvent(text string, major, minor []string) (models.Event, *models.BreakFast) {
 	trimmed := strings.TrimSpace(text)
 
-	// Break-fast info
+	// Break-fast info — structural, not an event
 	if m := reBreakFast.FindStringSubmatch(trimmed); m != nil {
 		return models.Event{}, &models.BreakFast{
 			Start: m[1],
@@ -108,40 +108,43 @@ func classifyEvent(text string, major, minor []string) (models.Event, *models.Br
 		}
 	}
 
-	// Appearance
-	if strings.Contains(trimmed, "-- Appearance") {
-		return models.Event{Type: models.EventAppearance, Description: trimmed}, nil
+	// Determine TYPE by text pattern only
+	var t models.EventType
+	switch {
+	case strings.Contains(trimmed, "-- Appearance") || strings.Contains(trimmed, "Appearance of"):
+		t = models.EventAppearance
+	case strings.Contains(trimmed, "-- Disappearance"):
+		t = models.EventDisappearance
+	case strings.HasPrefix(trimmed, "Fasting for ") || strings.HasPrefix(trimmed, "(Fast till ") || strings.HasPrefix(trimmed, "(Fasting till "):
+		t = models.EventFast
+	default:
+		t = models.EventNote
+		for _, f := range major {
+			if strings.HasPrefix(trimmed, f) {
+				t = models.EventFestival
+				break
+			}
+		}
+		if t == models.EventNote {
+			for _, f := range minor {
+				if strings.HasPrefix(trimmed, f) {
+					t = models.EventFestival
+					break
+				}
+			}
+		}
 	}
 
-	// Disappearance
-	if strings.Contains(trimmed, "-- Disappearance") {
-		return models.Event{Type: models.EventDisappearance, Description: trimmed}, nil
-	}
-
-	// Fasting instruction
-	if strings.HasPrefix(trimmed, "Fasting for ") {
-		return models.Event{Type: models.EventFast, Description: trimmed}, nil
-	}
-	if strings.HasPrefix(trimmed, "(Fast till ") {
-		return models.Event{Type: models.EventFast, Description: trimmed}, nil
-	}
-
-	// Major festival
+	// Determine HIGHLIGHT independently — any event whose description starts with a major prefix
+	highlight := false
 	for _, f := range major {
 		if strings.HasPrefix(trimmed, f) {
-			return models.Event{Type: models.EventFestival, Description: trimmed, Highlight: true}, nil
+			highlight = true
+			break
 		}
 	}
 
-	// Minor festival
-	for _, f := range minor {
-		if strings.HasPrefix(trimmed, f) {
-			return models.Event{Type: models.EventFestival, Description: trimmed}, nil
-		}
-	}
-
-	// Default: note
-	return models.Event{Type: models.EventNote, Description: trimmed}, nil
+	return models.Event{Type: t, Description: trimmed, Highlight: highlight}, nil
 }
 
 var reSankrantiParse = regexp.MustCompile(`^-+\s+(\w+\s+Sankranti)\s+\((.+?)\)\s+-+$`)
