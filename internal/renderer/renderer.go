@@ -175,12 +175,7 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 					cell.Icons = append(cell.Icons, icon)
 				}
 			}
-			// Ekadasi fasting events: show moon icon in footnotes only, not in grid
-			footnoteIcon := icon
-			if strings.HasPrefix(evt.Description, "Fasting for ") && strings.Contains(evt.Description, "Ekadasi") {
-				footnoteIcon = IconEkadasi
-			}
-			addFootnote(evt.Description, footnoteIcon, evt.Highlight)
+			addFootnote(evt.Description, "", evt.Highlight)
 		}
 
 		if day.BreakFast != nil {
