@@ -137,10 +137,6 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 			IsEkadasi:     strings.HasPrefix(day.Tithi, "Ekadasi"),
 		}
 
-		if cell.IsEkadasi {
-			cell.Icons = append(cell.Icons, IconEkadasi)
-		}
-
 		dayNum := day.Date.Day()
 		firstFn := true
 
@@ -179,7 +175,12 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 					cell.Icons = append(cell.Icons, icon)
 				}
 			}
-			addFootnote(evt.Description, icon, evt.Highlight)
+			// Ekadasi fasting events: show moon icon in footnotes only, not in grid
+			footnoteIcon := icon
+			if strings.HasPrefix(evt.Description, "Fasting for ") && strings.Contains(evt.Description, "Ekadasi") {
+				footnoteIcon = IconEkadasi
+			}
+			addFootnote(evt.Description, footnoteIcon, evt.Highlight)
 		}
 
 		if day.BreakFast != nil {
