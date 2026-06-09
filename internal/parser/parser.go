@@ -31,7 +31,7 @@ var (
 	reSeparator = regexp.MustCompile(`^-{10,}$`)
 
 	reMasaHeader = regexp.MustCompile(`(\S+(?:-\S+)?)\s+(?:\((\w+)\)\s+)?Masa,\s+Gaurabda\s+(\d+)`)
-	reLocation   = regexp.MustCompile(`(.+?)\s+\((\d+N\d+\s+\d+E\d+),\s*([^)]+)\)`)
+	reLocation   = regexp.MustCompile(`(.+?)\s+\((\d+[NS]\d+\s+\d+[EW]\d+),\s*([^)]+)\)`)
 
 	// Tithi and paksa may be separated by 2+ spaces OR zero spaces (e.g. "fasting)G Hasta")
 	reDayParse = regexp.MustCompile(`^\s?(\d{1,2})\s+(\w{3})\s+(\d{4})\s+(\w{2})\s{2,3}(.+?)\s*(G|K)\s+(\S+(?:-\S+)?)\s*(\*?)\s*$`)
@@ -56,7 +56,7 @@ func classifyLine(line string) LineType {
 		return LineMasaHeader
 	}
 
-	if regexp.MustCompile(`\d+N\d+\s+\d+E\d+`).MatchString(trimmed) {
+	if regexp.MustCompile(`\d+[NS]\d+\s+\d+[EW]\d+`).MatchString(trimmed) {
 		return LineLocation
 	}
 
@@ -148,7 +148,7 @@ func classifyEvent(text string, major, minor []string) (models.Event, *models.Br
 }
 
 var reSankrantiParse = regexp.MustCompile(`^-+\s+(\w+\s+Sankranti)\s+\((.+?)\)\s+-+$`)
-var reSankrantiDate  = regexp.MustCompile(`on\s+(\d{1,2})\s+(\w{3})`)
+var reSankrantiDate = regexp.MustCompile(`on\s+(\d{1,2})\s+(\w{3})`)
 
 func parseSankranti(line string) (models.Sankranti, int, time.Month) {
 	trimmed := strings.TrimSpace(line)

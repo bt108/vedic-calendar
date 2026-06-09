@@ -26,7 +26,7 @@
 \begin{tikzpicture}
 \fill[headerbg] (0,0) rectangle (\linewidth,1.2cm);
 \node[anchor=west,white,font=\Large\bfseries] at (0.3cm,0.6cm) { {{$grid.MasaName}}{{if $grid.MasaAltName}} ({{$grid.MasaAltName}}){{end}}{{if $grid.GregorianMonths}} --- {{$grid.GregorianMonths}}{{end}} };
-\node[anchor=east,white,font=\normalsize] at (\linewidth-0.3cm,0.6cm) {Gaurabda {{$grid.GaurabdaYear}} --- {{$grid.Location}}};
+\node[anchor=east,white,font=\normalsize] at (\linewidth-0.3cm,0.6cm) {Gaurabda {{$grid.GaurabdaYear}} — {{$grid.GregorianYears}} — {{$grid.Location}}};
 \end{tikzpicture}
 
 \vspace{1pt}

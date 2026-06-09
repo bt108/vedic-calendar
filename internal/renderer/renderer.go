@@ -42,6 +42,7 @@ type MonthGrid struct {
 	GaurabdaYear    int
 	Location        string
 	GregorianMonths string
+	GregorianYears  string
 	Weeks           [][7]*CellData
 	Footnotes       []Footnote
 }
@@ -91,12 +92,30 @@ func gregorianMonthRange(days []models.Day) string {
 	return strings.Join(parts, "/")
 }
 
+func gregorianYearRange(days []models.Day) string {
+	seen := make(map[int]bool)
+	var ordered []int
+	for _, d := range days {
+		y := d.Date.Year()
+		if !seen[y] {
+			seen[y] = true
+			ordered = append(ordered, y)
+		}
+	}
+	parts := make([]string, len(ordered))
+	for i, y := range ordered {
+		parts[i] = fmt.Sprintf("%d", y)
+	}
+	return strings.Join(parts, "/")
+}
+
 func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 	grid := MonthGrid{
 		MasaName:        month.MasaName,
 		MasaAltName:     month.MasaAltName,
 		GaurabdaYear:    month.GaurabdaYear,
 		GregorianMonths: gregorianMonthRange(month.Days),
+		GregorianYears:  gregorianYearRange(month.Days),
 	}
 
 	if len(month.Days) == 0 {
@@ -133,8 +152,8 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 			TithiSub:   tithiSub,
 			PaksaLabel: day.Paksa,
 			Naksatra:   day.Naksatra,
-			Fasting:       day.Fasting,
-			IsEkadasi:     strings.HasPrefix(day.Tithi, "Ekadasi"),
+			Fasting:    day.Fasting,
+			IsEkadasi:  strings.HasPrefix(day.Tithi, "Ekadasi"),
 		}
 
 		dayNum := day.Date.Day()
@@ -189,7 +208,7 @@ func BuildMonthGrid(month models.VedicMonth) MonthGrid {
 }
 
 type TemplateData struct {
-	Grids    []MonthGrid
+	Grids []MonthGrid
 }
 
 func LoadCalendar(jsonPath string) (models.Calendar, error) {
