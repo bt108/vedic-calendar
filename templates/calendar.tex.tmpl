@@ -26,7 +26,7 @@
 \begin{tikzpicture}
 \fill[headerbg] (0,0) rectangle (\linewidth,1.2cm);
 \node[anchor=west,white,font=\Large\bfseries] at (0.3cm,0.6cm) { {{$grid.MasaName}}{{if $grid.MasaAltName}} ({{$grid.MasaAltName}}){{end}}{{if $grid.GregorianMonths}} --- {{$grid.GregorianMonths}}{{end}} };
-\node[anchor=east,white,font=\normalsize] at (\linewidth-0.3cm,0.6cm) {Gaurabda {{$grid.GaurabdaYear}} — {{$grid.GregorianYears}} — {{$grid.Location}}};
+\node[anchor=east,white,font=\normalsize] at (\linewidth-0.3cm,0.6cm) {Gaurabda {{$grid.GaurabdaYear}} ({{$grid.GregorianYears}}) · {{$grid.Location}}};
 \end{tikzpicture}
 
 \vspace{1pt}
@@ -46,7 +46,7 @@
 \noindent
 \begin{tikzpicture}
 \pgfmathsetmacro{\cellw}{\textwidth/7/1cm}
-\def\rowh{2.4}
+\def\rowh{2.1}
 {{range $wi, $week := $grid.Weeks}}{{range $ci, $cell := $week}}{{if $cell}}%
 % Cell row={{$wi}} col={{$ci}}
 \pgfmathsetmacro{\xpos}{ {{$ci}}*\cellw}
@@ -80,13 +80,14 @@
 % Footnotes
 \vfill
 \noindent\rule{\textwidth}{0.4pt}
+\vspace{-7mm}
 \begin{multicols}{3}
 \raggedcolumns
 \scriptsize\raggedright
 {{range $grid.Footnotes}}\noindent\makebox[1.5em][r]{ {{- if .ShowDayNum}}{{.DayNum}}{{end -}} }\enspace {{if .Highlight}}\textbf{ {{- .Text -}} }{{else}}{{.Text}}{{end}}\par
 {{end}}
 \end{multicols}
-\vspace{1mm}
+\vspace{-2mm}
 {\scriptsize \faMoon\,Ekadasi \quad \faStar\,Appearance \quad \faFire\,Disappearance \quad \faDrum\,Festival \quad \faSun\,Sankranti \quad \raisebox{0.6ex}{\fcolorbox{black}{fastingbg}{~~}}\,Fasting day}
 
 \newpage
