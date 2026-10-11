@@ -4,11 +4,10 @@
 [![license MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![built with LuaLaTeX](https://img.shields.io/badge/built%20with-LuaLaTeX-orange)](https://www.luatex.org)
 
-A Go + LuaLaTeX pipeline that turns GCal-exported Vedic calendar text into a
+A Go + LuaLaTeX pipeline turning GCal-exported Vedic calendar text into a
 printable A4 landscape PDF, one page per lunar month. Drop a plaintext
-calendar export in `data/`, run `make`, collect the PDF — festivals,
-Ekadasi fasting days, appearances/disappearances, and sankrantis are laid out
-on a Sunday-start grid with footnotes.
+export in `data/`, run `make`, collect the PDF — festivals, Ekadasi fasts,
+appearances/disappearances, and sankrantis on a Sunday-start grid with footnotes.
 
 ## 30-second example
 
@@ -43,12 +42,11 @@ make FILE="data/Lisbon [Portugal]-2027.txt"           # text → JSON → LaTeX 
 
 - Go 1.25+ (`go`) — builds the `parser`, `renderer`, and `merger` binaries
 - LuaLaTeX (`lualatex`, TeX Live) — compiles the generated `.tex` into the PDF
-  (TikZ grids, `multicol` footnotes, `fontspec` font loading)
-- `Charis SIL` font (`fonts-sil-charis`) — the document `\setmainfont`; covers
-  the transliteration diacritics (ā, ī, ṭh, ṅ, ñ, etc.)
+  (TikZ grids, footnotes, font loading)
+- `Charis SIL` font (`fonts-sil-charis`) — document main font; covers the
+  transliteration diacritics (ā, ī, ṭh, ṅ, ñ, etc.)
 - `fontawesome5` LaTeX package (TeX Live: `texlive-fonts-extra`) — grid icons
-  (`\faMoon` Ekadasi, `\faStar` appearance, `\faFire` disappearance,
-  `\faDrum` festival, `\faSun` sankranti, `\faCrown` highlight watermark)
+  (`\faMoon`, `\faStar`, `\faFire`, `\faDrum`, `\faSun`, `\faCrown`)
 
 ```sh
 sudo apt install texlive-luatex texlive-latex-extra texlive-fonts-extra fonts-sil-charis
@@ -71,29 +69,27 @@ Tests: `go test ./...`
 ## Project layout
 
 ```
-cmd/parser/main.go        # CLI: .txt + festivals.json → calendar.json
-cmd/merger/main.go        # CLI: calendar.json + data/extra-*.json → merged.json
-cmd/renderer/main.go      # CLI: merged.json + templates/ → calendar-<name>.tex
-internal/models/          # shared structs (Calendar, VedicMonth, Day, Event) + JSON tags
-internal/parser/          # plaintext classification (day entry, masa header, sankranti) → model
-internal/merger/          # Vedic-date lookup (masa|paksa|tithi) injecting extra events
-internal/renderer/        # model → week-grid cells, footnote numbering, template execution
-templates/calendar.tex.tmpl  # LuaLaTeX template (TikZ grid, 3-column footnotes, legend)
-data/*.txt                # GCal-exported sample inputs (one city per file)
-data/festivals.json       # curated Gaudiya Vaisnava festivals (major/minor lists)
-data/extra-*.json         # optional extra events, auto-globbed by the Makefile
-scripts/check-deps.sh     # dependency check behind `make check`
-docs/img/                 # screenshots rendered from real output (150 dpi)
-output/                   # generated JSON/LaTeX/PDF per input (gitignored)
+cmd/parser/main.go        # .txt + festivals.json → calendar.json
+cmd/merger/main.go        # + data/extra-*.json → merged.json
+cmd/renderer/main.go      # + templates/ → calendar-<name>.tex
+internal/models/          # shared structs + JSON tags
+internal/parser/          # line classification → model
+internal/merger/          # Vedic-date lookup, injects extra events
+internal/renderer/        # week grids, footnotes, template execution
+templates/calendar.tex.tmpl  # TikZ grid, 3-column footnotes, legend
+data/*.txt                # sample inputs (one city per file)
+data/festivals.json       # Gaudiya Vaisnava festivals (major/minor)
+data/extra-*.json         # optional extra events (auto-globbed)
+scripts/check-deps.sh     # behind `make check`
+docs/img/                 # screenshots from real output (150 dpi)
+output/                   # generated JSON/LaTeX/PDF (gitignored)
 ```
 
 ## Extra events (`data/extra-*.json`)
 
-Any file matching `data/extra-*.json` is auto-globbed by the Makefile and merged
-into the calendar before rendering. Each entry is matched to calendar days by
-Vedic date (`masa` + `paksa` + `tithi`); the tithi's parenthetical qualifier is
-ignored, so `"Ekadasi"` matches `"Ekadasi (suitable for fasting)"`. Unmatched
-entries are reported on stderr and skipped.
+Any `data/extra-*.json` is auto-merged before rendering, matched by Vedic
+date (`masa` + `paksa` + `tithi`, qualifier ignored). Unmatched entries are
+reported on stderr and skipped.
 
 ```json
 [
@@ -108,29 +104,27 @@ entries are reported on stderr and skipped.
 ]
 ```
 
-- `masa`: Vedic month name, e.g. `Pausa`, `Magha` (must match the input's masa headers)
-- `paksa`: `shukla`/`krishna` (or `G`/`K`)
-- `tithi`: base tithi name, e.g. `Purnima`, `Ekadasi`, `Dvadasi`
-- `type`: `appearance`, `disappearance`, `festival`, `fast`, or `note`
-- `description`: footnote/cell text, rendered as-is
-- `highlight`: `true` bolds the footnote and adds a faint crown watermark to the cell
+| Field | Meaning |
+|---|---|
+| `masa` | Vedic month, e.g. `Pausa`, `Magha` (must match input headers) |
+| `paksa` | `shukla`/`krishna` (or `G`/`K`) |
+| `tithi` | base tithi, e.g. `Purnima`, `Ekadasi`, `Dvadasi` |
+| `type` | `appearance`, `disappearance`, `festival`, `fast`, or `note` |
+| `description` | footnote/cell text, rendered as-is |
+| `highlight` | `true` bolds the footnote and adds a crown watermark to the cell |
 
 ## Architecture
 
-- **Parse** — `cmd/parser` reads the `.txt` line by line, classifies each line
-  (day entry, continuation, masa header, sankranti), and emits `calendar.json`;
-  `data/festivals.json` substring matching decides `festival` vs `note`, major
-  festivals set `Highlight`.
-- **Merge** — `cmd/merger` loads every `data/extra-*.json` and injects entries
-  into matching days via a `masa|paksa|tithi` lookup, producing `merged.json`.
-- **Render** — `cmd/renderer` converts days into Sunday-start week grids, assigns
-  LaTeX icon commands (Unicode glyphs are missing from the main font), numbers
-  footnotes per page, and executes `templates/calendar.tex.tmpl`.
-- **Compile** — `lualatex` runs inside the per-input `output/<name>/` directory
-  so `.aux`/`.log` files stay co-located with the `.tex`.
-- **Contract** — JSON is the stable interface between stages; each stage is an
-  independent binary runnable on its own (`make parse` / `make render` /
-  `make pdf`).
+- **Parse** — `cmd/parser`: `.txt` → `calendar.json` (line classification;
+  `festivals.json` substring match sets `festival` vs `note`, majors get `Highlight`).
+- **Merge** — `cmd/merger`: `+ data/extra-*.json` → `merged.json`
+  (`masa|paksa|tithi` lookup).
+- **Render** — `cmd/renderer`: days → Sunday-start grids, LaTeX icons,
+  per-page footnotes → executes the template.
+- **Compile** — `lualatex` runs in `output/<name>/`, keeping `.aux`/`.log`
+  with the `.tex`.
+- **Contract** — JSON between stages; each binary runs standalone
+  (`make parse` / `make render` / `make pdf`).
 
 ## License
 
