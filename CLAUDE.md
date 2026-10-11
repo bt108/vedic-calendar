@@ -18,7 +18,7 @@ The JSON is the stable contract between parser and renderer. Each stage is indep
 
 ```bash
 make all                          # full pipeline (parse → render → compile PDF)
-make all INPUT="Tokyo [Japan].txt"  # different input file
+make FILE="data/Lisbon [Portugal]-2027.txt"  # different input file (most recent data/*.txt is default)
 make parse                        # text → JSON only
 make render                       # JSON → .tex only
 make pdf                          # .tex → PDF only
