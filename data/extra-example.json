@@ -1,0 +1,18 @@
+[
+  {
+    "masa": "Pausa",
+    "paksa": "shukla",
+    "tithi": "Purnima",
+    "type": "appearance",
+    "description": "Example Devotee -- Appearance",
+    "highlight": true
+  },
+  {
+    "masa": "Magha",
+    "paksa": "krishna",
+    "tithi": "Ekadasi",
+    "type": "disappearance",
+    "description": "Sample Devotee -- Disappearance",
+    "highlight": false
+  }
+]
