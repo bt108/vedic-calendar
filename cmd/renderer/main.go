@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/taraka/vedic-calendar/internal/renderer"
+	"github.com/bt108/vedic-calendar/internal/renderer"
 )
 
 func main() {

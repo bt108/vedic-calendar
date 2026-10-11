@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/taraka/vedic-calendar/internal/models"
+	"github.com/bt108/vedic-calendar/internal/models"
 )
 
 func TestBuildMonthGrid(t *testing.T) {

@@ -10,7 +10,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/taraka/vedic-calendar/internal/models"
+	"github.com/bt108/vedic-calendar/internal/models"
 )
 
 type CellData struct {

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/taraka/vedic-calendar/internal/merger"
-	"github.com/taraka/vedic-calendar/internal/models"
+	"github.com/bt108/vedic-calendar/internal/merger"
+	"github.com/bt108/vedic-calendar/internal/models"
 )
 
 func main() {

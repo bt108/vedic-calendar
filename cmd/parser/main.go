@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/taraka/vedic-calendar/internal/parser"
+	"github.com/bt108/vedic-calendar/internal/parser"
 )
 
 func main() {

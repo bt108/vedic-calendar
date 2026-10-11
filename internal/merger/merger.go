@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/taraka/vedic-calendar/internal/models"
+	"github.com/bt108/vedic-calendar/internal/models"
 )
 
 // ExtraEvent is one entry from an extra-*.json file.
